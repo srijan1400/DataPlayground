@@ -7,7 +7,7 @@ import { Configuration, OpenAIApi } from "openai";
 //const [visualData, setVisualData] = useState({});
 
 const configuration = new Configuration({
-  apiKey: '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',
+  apiKey: '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',
 });
 const openai = new OpenAIApi(configuration);
 
