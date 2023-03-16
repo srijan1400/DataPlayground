@@ -1,0 +1,61 @@
+.App {
+    text-align: center;
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+  }
+  
+  .App-header {
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+
+.file-uploader {
+display: flex;
+align-items: center;
+justify-content: center;
+margin-top: 20px;
+padding: 20px;
+background-color: white;
+border-radius: 10px;
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.file-uploader input[type="file"] {
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+background-color: #282c34;
+color: white;
+font-size: 16px;
+cursor: pointer;
+}
+
+.insights {
+margin-top: 20px;
+padding: 20px;
+background-color: white;
+border-radius: 10px;
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.insights h2 {
+font-size: 24px;
+color: #282c34;
+margin-bottom: 20px;
+}
+
+.insights p {
+font-size: 16px;
+color: #282c34;
+text-align: left;
+}
