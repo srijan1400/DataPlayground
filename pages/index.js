@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
 //import { Bar } from "react-chartjs-2";
 import { ComposedChart, XAxis, YAxis, Tooltip, Legend, Area, BarChart, Heatmap } from 'recharts';
+import { FileDrop } from 'react-file-drop'
+import { useRef } from 'react';
+
+import { BsFillDiamondFill } from "react-icons/bs";
 
 //import "./App.css";
 import { Configuration, OpenAIApi } from "openai";
 //const [visualData, setVisualData] = useState({});
 
 const configuration = new Configuration({
-  apiKey: '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',
+  apiKey: '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',
 });
 const openai = new OpenAIApi(configuration);
 
@@ -25,9 +29,26 @@ const Home = () => {
   //const [showHeatMap, setShowHeatMap] = useState(false);
   const [loading, setLoading] = useState(false);
   const [heatmapData, setHeatmapData] = useState([]);
+  const [dragOver, setDragOver] = useState(false);
 
- 
+  const fileInputRef = useRef(null);
+
   //const [loading, setLoading] = useState(false);
+  
+
+  const handleOnDrop = (acceptedFiles) => {
+    setCsvData([]);
+    acceptedFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const csvText = reader.result;
+        const { data } = Papa.parse(csvText, { header: true });
+        setCsvData((prev) => [...prev, ...data]);
+      };
+      reader.readAsText(file);
+    });
+    setDragOver(false);
+  };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -47,15 +68,6 @@ const Home = () => {
     setPrompt(e.target.value);
   };
   
-  const handleHeatmapClick = () => {
-      
-    const processedData = csvData.map((row) => ({
-    x: row[0],
-    y: row[1],
-    value: row[2],
-    }));
-    setHeatmapData(processedData);
-  };
 
     const generateInsights  = async (promptText) => {
       setPrompt(promptText);
@@ -63,7 +75,7 @@ const Home = () => {
         const response = await openai.createChatCompletion({
           model: "gpt-3.5-turbo",
           messages: [
-            {"role": "system", "content": "You are a helpful data assistant that analyzes datasets and answers related questions"},
+            {"role": "system", "content": "You are a helpful data assistant that analyzes datasets and gives detailed data and business insights related to the data"},
             {"role": "user", "content": promptText + csvData.map((row) => row.join(",")).join("\n")}
           ]
         });
@@ -88,14 +100,36 @@ const Home = () => {
 
   return (
     <div style={{ textAlign: "center", marginTop: "20px" }}>
-      <h1 style={{ marginBottom: "20px" }}>CSV Data Insights Generator</h1>
-      <input type="file" onChange={handleFileUpload} />
+      <h1 style={{ marginBottom: "20px" }}>Data Playground</h1>
+      <h2 style = {{ marginBottom: "20px"}}>Made by </h2>
+      <a  style = {{ textDecoration : 'none', fontSize:20}} href="https://www.linkedin.com/in/srijan-devnath-1730841bb/">Srijan Devnath</a>
+      <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", marginTop:20 }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px", border: "2px dashed #ccc", borderRadius: "5px", marginBottom: "20px", width: "500px", height: "200px" }}
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={(e) => { e.preventDefault(); setDragOver(false); }}
+          onDrop={handleFileUpload}
+        >
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+            <span style={{ fontSize: "24px", fontWeight: "bold" }}>Drag and drop your CSV file here</span>
+            <span style={{ fontSize: "16px", color: "#555", marginTop: "10px" }}>or</span>
+            <input type="file" onChange={handleFileUpload} style={{ display: "none" }} ref={fileInputRef} />
+            <button style={{ backgroundColor: "#3f51b5", color: "white", padding: "10px 20px", border: "none", borderRadius: "5px", cursor: "pointer", marginTop: "20px" }} onClick={() => fileInputRef.current.click()}>
+              Browse Files
+            </button>
+          </div>
+        </div>
+        {dragOver && (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px", backgroundColor: "#eee", borderRadius: "5px", width: "500px", height: "200px" }}>
+            <span style={{ fontSize: "24px", fontWeight: "bold" }}>Drop your file here</span>
+          </div>
+        )}
+      </div>
       {csvData.length ? (
         <div>
           <h2 style={{ marginTop: "40px", marginBottom: "10px" }}>Quantitative Analysis:</h2>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: "30px" }}>
             <button
-              onClick={() => generateInsights("What is the total number of rows and columns in the dataset: \n")}
+              onClick={() => generateInsights("Which columns can be used specifically for analysis: \n")}
               style={{
                 backgroundColor: "#3f51b5",
                 color: "white",
@@ -106,10 +140,10 @@ const Home = () => {
                 marginRight: "20px"
               }}
             >
-               What is the size of the dataset
+               Which columns can be used specifically for analysis
             </button>
             <button
-              onClick={() => generateInsights("Are there any NULL values in the dataset: \n")}
+              onClick={() => generateInsights("Which columns needs to be removed due to excessive NULL values: \n")}
               style={{
                 backgroundColor: "#3f51b5",
                 color: "white",
@@ -120,7 +154,7 @@ const Home = () => {
                 marginRight: "20px"
               }}
             >
-              Are there any NULL values  
+              Which columns needs to be removed due to excessive NULL values 
             </button>
           </div>
           
@@ -128,7 +162,7 @@ const Home = () => {
         <h2 style={{ marginTop: "40px", marginBottom: "10px" }}>Qualitative Analysis:</h2>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: "30px" }}>
             <button
-              onClick={() => generateInsights("Can you provide a quick summary of the data: \n")}
+              onClick={() => generateInsights("Identify potential problems with the data: \n")}
               style={{
                 backgroundColor: "#3EB489",
                 color: "white",
@@ -139,10 +173,10 @@ const Home = () => {
                 marginRight: "20px"
               }}
             >
-               Provide a quick summary of the data
+               Identify potential problems with the data
             </button>
             <button
-              onClick={() => generateInsights("Are there any similar columns in the dataset: \n")}
+              onClick={() => generateInsights("What business insights can you generate using the data : \n")}
               style={{
                 backgroundColor: "#3EB489",
                 color: "white",
@@ -153,7 +187,7 @@ const Home = () => {
                 marginRight: "20px"
               }}
             >
-              Are there any similar columns in the dataset  
+              What business insights can you generate using the data
             </button>
           </div>
           
@@ -161,7 +195,7 @@ const Home = () => {
         <h2 style={{ marginTop: "40px", marginBottom: "10px" }}>Representational Analysis:</h2>
           <div style={{ display: "flex", justifyContent: "center", marginBottom: "30px" }}>
             <button
-              onClick={handleHeatmapClick}
+              onClick={() => generateInsights("Which charts can be used to best describe the columns : \n")}
               style={{
                 backgroundColor: "#FF0000",
                 color: "white",
@@ -172,10 +206,10 @@ const Home = () => {
                 marginRight: "20px"
               }}
             >
-               Generate a similarity heatmap for the dataset 
+               Which specific charts can be used for the best analysis 
             </button>
             <button
-              onClick={{}}
+              onClick={() => generateInsights("Give an ordered EDA process of the data with charts : \n")}
               style={{
                 backgroundColor: "#FF0000",
                 color: "white",
@@ -186,19 +220,21 @@ const Home = () => {
                 marginRight: "20px"
               }}
             >
-              Plot a line graph between the 2 least similar columns 
+              Give an ordered EDA process of the data with charts 
             </button>
           </div>
 
           <div style= {{justifyItems : 'center'}}>
           <h2 style={{marginTop : "40px"}}>Enter your own prompt:</h2>
-          <textarea style = {{width: '700px', paddingLeft: '10px', paddingTop:'10px'}} value={prompt} onChange={handlePromptChange} />
+          <textarea style = {{width: '600px', paddingLeft: '10px', paddingTop:'12px', fontSize:15}} value={prompt} onChange={handlePromptChange} />
           <button style = {{ position: "absolute", marginTop:"10px", marginLeft: '20px'}} onClick={() => generateInsights(prompt)}>Submit</button>
         </div>
 
-          <div>
-          <h1 style = {{marginTop : "60px"}}>Generated Insights:</h1>
-          <p style = {{paddingLeft : "400px", paddingRight : "400px"}}>{insights}</p>
+          <div >
+           
+           <div style = {{borderStyle:'solid', borderColor:'black', width: '40%', justifyContent:'center', marginLeft:'30%', textAlign: 'center,', display:'flex', marginTop:30}}>
+            <p style = {{paddingRight: 15, paddingLeft:15, fontSize:20}}>{insights}</p>
+           </div>
         </div>  
         
         </div>
