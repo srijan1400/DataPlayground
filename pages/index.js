@@ -4,7 +4,7 @@ import { ComposedChart, XAxis, YAxis, Tooltip, Legend, Area, BarChart, Heatmap }
 import { FileDrop } from 'react-file-drop'
 import { useRef } from 'react';
 
-import { BsFillDiamondFill } from "react-icons/bs";
+
 
 //import "./App.css";
 import { Configuration, OpenAIApi } from "openai";
