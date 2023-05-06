@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 //import { Bar } from "react-chartjs-2";
 import { ComposedChart, XAxis, YAxis, Tooltip, Legend, Area, BarChart, Heatmap } from 'recharts';
-import FileDrop from 'react-file-drop'
+import { useDropzone } from 'react-dropzone';
 import { useRef } from 'react';
 
 
@@ -49,6 +49,8 @@ const Home = () => {
     });
     setDragOver(false);
   };
+  
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop: handleOnDrop });
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -91,39 +93,27 @@ const Home = () => {
       }
     };
 
-    const promptOptions = [
-      "What are the trends in sales over the past year?",
-      "What are the top selling products?",
-      "What are the factors affecting sales?",
-    ];
 
 
   return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
-      <h1 style={{ marginBottom: "20px" }}>Data Playground</h1>
-      <h2 style = {{ marginBottom: "20px"}}>Made by </h2>
-      <a  style = {{ textDecoration : 'none', fontSize:20}} href="https://www.linkedin.com/in/srijan-devnath-1730841bb/">Srijan Devnath</a>
-      <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center", marginTop:20 }}>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px", border: "2px dashed #ccc", borderRadius: "5px", marginBottom: "20px", width: "500px", height: "200px" }}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={(e) => { e.preventDefault(); setDragOver(false); }}
-          onDrop={handleFileUpload}
-        >
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-            <span style={{ fontSize: "24px", fontWeight: "bold" }}>Drag and drop your CSV file here</span>
-            <span style={{ fontSize: "16px", color: "#555", marginTop: "10px" }}>or</span>
-            <input type="file" onChange={handleFileUpload} style={{ display: "none" }} ref={fileInputRef} />
-            <button style={{ backgroundColor: "#3f51b5", color: "white", padding: "10px 20px", border: "none", borderRadius: "5px", cursor: "pointer", marginTop: "20px" }} onClick={() => fileInputRef.current.click()}>
-              Browse Files
-            </button>
-          </div>
-        </div>
-        {dragOver && (
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px", backgroundColor: "#eee", borderRadius: "5px", width: "500px", height: "200px" }}>
-            <span style={{ fontSize: "24px", fontWeight: "bold" }}>Drop your file here</span>
-          </div>
-        )}
-      </div>
+    <input type="file" accept=".csv" onChange={handleFileUpload} />
+  </div>
+  <div className="dropzone-container" {...getRootProps()}>
+    <input {...getInputProps()} />
+    {isDragActive ? (
+      <p className="dropzone-text">Drop the files here ...</p>
+    ) : (
+      <>
+        <p className="dropzone-text">
+          Drag 'n' drop some files here, or click to select files
+        </p>
+        <button className="dropzone-btn" onClick={() => fileInputRef.current.click()}>
+          Browse Files
+        </button>
+      </>
+    )}
+    {dragOver && <div className="dropzone-overlay"></div>}
+  </div>
       {csvData.length ? (
         <div>
           <h2 style={{ marginTop: "40px", marginBottom: "10px" }}>Quantitative Analysis:</h2>
