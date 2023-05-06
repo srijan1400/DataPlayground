@@ -97,7 +97,6 @@ const Home = () => {
 
   return (
     <input type="file" accept=".csv" onChange={handleFileUpload} />
-  </div>
   <div className="dropzone-container" {...getRootProps()}>
     <input {...getInputProps()} />
     {isDragActive ? (
