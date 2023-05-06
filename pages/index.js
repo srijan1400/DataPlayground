@@ -96,23 +96,10 @@ const Home = () => {
 
 
   return (
-    <input type="file" accept=".csv" onChange={handleFileUpload} />
-  <div className="dropzone-container" {...getRootProps()}>
-    <input {...getInputProps()} />
-    {isDragActive ? (
-      <p className="dropzone-text">Drop the files here ...</p>
-    ) : (
-      <>
-        <p className="dropzone-text">
-          Drag 'n' drop some files here, or click to select files
-        </p>
-        <button className="dropzone-btn" onClick={() => fileInputRef.current.click()}>
-          Browse Files
-        </button>
-      </>
-    )}
-    {dragOver && <div className="dropzone-overlay"></div>}
-  </div>
+    <div {...getRootProps()} className={dragOver ? "dropzone dragover" : "dropzone"}>
+        <input {...getInputProps()} />
+        <p>Drag and drop your CSV file here, or click to select files</p>
+      </div>
       {csvData.length ? (
         <div>
           <h2 style={{ marginTop: "40px", marginBottom: "10px" }}>Quantitative Analysis:</h2>
