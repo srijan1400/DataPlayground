@@ -96,6 +96,7 @@ const Home = () => {
 
 
   return (
+  <div>
     <div {...getRootProps()} className={dragOver ? "dropzone dragover" : "dropzone"}>
         <input {...getInputProps()} />
         <p>Drag and drop your CSV file here, or click to select files</p>
