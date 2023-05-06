@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 //import { Bar } from "react-chartjs-2";
 import { ComposedChart, XAxis, YAxis, Tooltip, Legend, Area, BarChart, Heatmap } from 'recharts';
-import { FileDrop } from 'react-file-drop'
+import FileDrop from 'react-file-drop'
 import { useRef } from 'react';
 
 
